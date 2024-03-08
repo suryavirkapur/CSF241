@@ -1,37 +1,47 @@
 .MODEL small
 .STACK 100h
 
-.DATA
-    prompt DB 'Enter a character: $'
-    result DB 0Dh, 0Ah, 'ASCII value: $'
+.STARTUP
+    ; Read character from keyboard
+    mov ah, 01h
+    int 21h
+    mov bl, al
 
-.CODE
-    main PROC
-        mov ax, @data
-        mov ds, ax
+    ; Display hexadecimal value
+    mov ah, 02h
+    mov dl, '0'
+    int 21h
 
-        ; Display prompt
-        mov ah, 09h
-        lea dx, prompt
-        int 21h
+    mov ah, 02h
+    mov dl, 'x'
+    int 21h
 
-        ; Read character from keyboard
-        mov ah, 01h
-        int 21h
-        mov bl, al
+    mov cl, 4
+    shr bl, cl
+    call display_hex_digit
 
-        ; Display result message
-        mov ah, 09h
-        lea dx, result
-        int 21h
+    mov cl, 4
+    shl bl, cl
+    shr bl, cl
+    call display_hex_digit
 
-        ; Display ASCII value
-        mov ah, 02h
-        mov dl, bl
-        int 21h
+    ; Exit program
+    .EXIT
 
-        ; Exit program
-        mov ah, 4Ch
-        int 21h
-    main ENDP
-END main
+display_hex_digit PROC
+    cmp bl, 9
+    jg display_letter
+    add bl, '0'
+    jmp display_digit
+
+display_letter:
+    add bl, 'A' - 10
+
+display_digit:
+    mov ah, 02h
+    mov dl, bl
+    int 21h
+    ret
+display_hex_digit ENDP
+
+END
