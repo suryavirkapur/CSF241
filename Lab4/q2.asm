@@ -17,12 +17,10 @@
     int 21h
 
     mov cl, 4
-    shr bl, cl
+    ror bl, cl
     call display_hex_digit
 
-    mov cl, 4
-    shl bl, cl
-    shr bl, cl
+    ror bl, cl
     call display_hex_digit
 
     ; Exit program
